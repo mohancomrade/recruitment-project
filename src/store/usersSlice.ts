@@ -28,16 +28,20 @@ export const fetchUsers = createAsyncThunk(
 
 export const createUser = createAsyncThunk(
   'users/createUser',
-  async (userData: CreateUserRequest, { rejectWithValue }) => {
+  async (userData: CreateUserRequest & { email?: string; avatar?: string }, { rejectWithValue }) => {
     try {
       const response = await usersApi.createUser(userData);
       // Since the API doesn't return a full user object, we'll create a mock one
+      const nameParts = userData.name.split(' ');
+      const firstName = nameParts[0] || userData.name;
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
       const newUser: User = {
         id: parseInt(response.id),
-        first_name: userData.name.split(' ')[0] || userData.name,
-        last_name: userData.name.split(' ')[1] || '',
-        email: `${userData.name.toLowerCase().replace(' ', '.')}@example.com`,
-        avatar: `https://via.placeholder.com/150?text=${userData.name.charAt(0)}`,
+        first_name: firstName,
+        last_name: lastName,
+        email: userData.email || `${userData.name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+        avatar: userData.avatar || `https://via.placeholder.com/150?text=${firstName.charAt(0)}`,
       };
       return newUser;
     } catch (error: any) {
@@ -48,16 +52,20 @@ export const createUser = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   'users/updateUser',
-  async ({ id, userData }: { id: number; userData: UpdateUserRequest }, { rejectWithValue }) => {
+  async ({ id, userData }: { id: number; userData: UpdateUserRequest & { email?: string; avatar?: string } }, { rejectWithValue }) => {
     try {
       await usersApi.updateUser(id, userData);
       // Return the updated user data
+      const nameParts = userData.name.split(' ');
+      const firstName = nameParts[0] || userData.name;
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
       return {
         id,
-        first_name: userData.name.split(' ')[0] || userData.name,
-        last_name: userData.name.split(' ')[1] || '',
-        email: `${userData.name.toLowerCase().replace(' ', '.')}@example.com`,
-        avatar: `https://via.placeholder.com/150?text=${userData.name.charAt(0)}`,
+        first_name: firstName,
+        last_name: lastName,
+        email: userData.email || `${userData.name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
+        avatar: userData.avatar || `https://via.placeholder.com/150?text=${firstName.charAt(0)}`,
       };
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to update user');
@@ -134,7 +142,13 @@ const usersSlice = createSlice({
         state.loading = false;
         const index = state.users.findIndex(user => user.id === action.payload.id);
         if (index !== -1) {
-          state.users[index] = { ...state.users[index], ...action.payload };
+          state.users[index] = {
+            ...state.users[index],
+            first_name: action.payload.first_name,
+            last_name: action.payload.last_name,
+            email: action.payload.email,
+            avatar: action.payload.avatar
+          };
         }
       })
       .addCase(updateUser.rejected, (state, action) => {

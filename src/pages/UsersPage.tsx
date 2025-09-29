@@ -66,6 +66,9 @@ const UsersPage: React.FC = () => {
 
   const handleViewModeChange = (mode: 'list' | 'card') => {
     dispatch(setViewMode(mode));
+    // Clear search when changing view modes
+    dispatch(setSearchQuery(''));
+    dispatch(setCurrentPage(1));
   };
 
   const handlePageChange = (page: number, pageSize?: number) => {
@@ -101,7 +104,13 @@ const UsersPage: React.FC = () => {
       align: 'left',
       render: (email: string, record: User) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Avatar src={record.avatar} size={32} />
+          <Avatar 
+            src={record.avatar} 
+            size={32}
+            style={{ backgroundColor: '#4285f4' }}
+          >
+            {record.first_name.charAt(0)}{record.last_name.charAt(0)}
+          </Avatar>
           <a href={`mailto:${email}`} style={{ color: '#3b82f6', textDecoration: 'none' }}>
             {email}
           </a>

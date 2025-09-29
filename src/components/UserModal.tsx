@@ -1,12 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { Form, Input, Button, message } from 'antd';
+import { UserOutlined, MailOutlined, PictureOutlined } from '@ant-design/icons';
 import { User } from '../types';
 
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (userData: { name: string; job: string }) => void;
+  onSave: (userData: { name: string; job: string; email?: string; avatar?: string }) => void;
   user?: User | null;
   loading?: boolean;
+}
+
+interface UserFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  profileImage: string;
 }
 
 const UserModal: React.FC<UserModalProps> = ({ 
@@ -16,61 +26,44 @@ const UserModal: React.FC<UserModalProps> = ({
   user, 
   loading = false 
 }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [profileImage, setProfileImage] = useState('');
-  const [errors, setErrors] = useState<{ firstName?: string; lastName?: string; email?: string; profileImage?: string }>({});
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+    watch
+  } = useForm<UserFormData>({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      profileImage: ''
+    }
+  });
+
+  // Watch profile image to show preview
+  const profileImageUrl = watch('profileImage');
 
   useEffect(() => {
     if (user) {
-      setFirstName(user.first_name);
-      setLastName(user.last_name);
-      setEmail(user.email);
-      setProfileImage(user.avatar);
+      setValue('firstName', user.first_name);
+      setValue('lastName', user.last_name);
+      setValue('email', user.email);
+      setValue('profileImage', user.avatar);
     } else {
-      setFirstName('');
-      setLastName('');
-      setEmail('');
-      setProfileImage('');
+      reset();
     }
-    setErrors({});
-  }, [user, isOpen]);
+  }, [user, isOpen, setValue, reset]);
 
-  const validateForm = (): boolean => {
-    const newErrors: { firstName?: string; lastName?: string; email?: string; profileImage?: string } = {};
-
-    if (!firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    }
-
-    if (!lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
-
-    if (!email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-
-    if (!profileImage.trim()) {
-      newErrors.profileImage = 'Profile image link is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
-    onSave({ name: fullName, job: 'Developer' });
+  const onSubmit = (data: UserFormData) => {
+    const fullName = `${data.firstName.trim()} ${data.lastName.trim()}`.trim();
+    onSave({ 
+      name: fullName, 
+      job: 'Developer',
+      email: data.email.trim(),
+      avatar: data.profileImage.trim()
+    });
   };
 
   if (!isOpen) return null;
@@ -87,92 +80,157 @@ const UserModal: React.FC<UserModalProps> = ({
           </button>
         </div>
         
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="firstName" className="form-label required">
-              First Name
-            </label>
-            <input
-              type="text"
-              id="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className={`form-input ${errors?.firstName ? 'error' : ''}`}
-              placeholder="Please enter first name"
-            />
-            {errors?.firstName && (
-              <div className="error-message">{errors.firstName}</div>
-            )}
-          </div>
+        <Form
+          layout="vertical"
+          onFinish={handleSubmit(onSubmit)}
+          className="user-modal-form"
+        >
+          
 
-          <div className="form-group">
-            <label htmlFor="lastName" className="form-label required">
-              Last Name
-            </label>
-            <input
-              type="text"
-              id="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className={`form-input ${errors?.lastName ? 'error' : ''}`}
-              placeholder="Please enter last name"
+          <Form.Item
+            label="First Name"
+            validateStatus={errors.firstName ? 'error' : ''}
+            help={errors.firstName?.message}
+            required
+          >
+            <Controller
+              name="firstName"
+              control={control}
+              rules={{
+                required: 'First name is required',
+                minLength: {
+                  value: 2,
+                  message: 'First name must be at least 2 characters'
+                }
+              }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  prefix={<UserOutlined />}
+                  placeholder="Please enter first name"
+                  size="large"
+                  status={errors.firstName ? 'error' : ''}
+                />
+              )}
             />
-            {errors?.lastName && (
-              <div className="error-message">{errors.lastName}</div>
-            )}
-          </div>
+          </Form.Item>
 
-          <div className="form-group">
-            <label htmlFor="email" className="form-label required">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={`form-input ${errors?.email ? 'error' : ''}`}
-              placeholder="Please enter email"
+          <Form.Item
+            label="Last Name"
+            validateStatus={errors.lastName ? 'error' : ''}
+            help={errors.lastName?.message}
+            required
+          >
+            <Controller
+              name="lastName"
+              control={control}
+              rules={{
+                required: 'Last name is required',
+                minLength: {
+                  value: 2,
+                  message: 'Last name must be at least 2 characters'
+                }
+              }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  prefix={<UserOutlined />}
+                  placeholder="Please enter last name"
+                  size="large"
+                  status={errors.lastName ? 'error' : ''}
+                />
+              )}
             />
-            {errors?.email && (
-              <div className="error-message">{errors.email}</div>
-            )}
-          </div>
+          </Form.Item>
 
-          <div className="form-group">
-            <label htmlFor="profileImage" className="form-label required">
-              Profile Image Link
-            </label>
-            <input
-              type="url"
-              id="profileImage"
-              value={profileImage}
-              onChange={(e) => setProfileImage(e.target.value)}
-              className={`form-input ${errors?.profileImage ? 'error' : ''}`}
-              placeholder="Please enter profile image link"
+          <Form.Item
+            label="Email"
+            validateStatus={errors.email ? 'error' : ''}
+            help={errors.email?.message}
+            required
+          >
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: 'Email is required',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Please enter a valid email address'
+                }
+              }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  prefix={<MailOutlined />}
+                  placeholder="Please enter email"
+                  size="large"
+                  type="email"
+                  status={errors.email ? 'error' : ''}
+                />
+              )}
             />
-            {errors?.profileImage && (
-              <div className="error-message">{errors.profileImage}</div>
-            )}
-          </div>
+          </Form.Item>
+
+          <Form.Item
+            label="Profile Image URL"
+            validateStatus={errors.profileImage ? 'error' : ''}
+            help={errors.profileImage?.message}
+            extra="Paste any image URL - it will show a preview above"
+            required
+          >
+            <Controller
+              name="profileImage"
+              control={control}
+              rules={{
+                required: 'Profile image URL is required',
+                pattern: {
+                  value: /^https?:\/\/.+/,
+                  message: 'Please enter a valid URL starting with http:// or https://'
+                },
+                validate: (value) => {
+                  // Allow any valid URL format
+                  try {
+                    new URL(value);
+                    return true;
+                  } catch {
+                    return 'Please enter a valid URL';
+                  }
+                }
+              }}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  prefix={<PictureOutlined />}
+                  placeholder="Paste any image URL here (e.g., https://via.placeholder.com/150)"
+                  size="large"
+                  type="url"
+                  status={errors.profileImage ? 'error' : ''}
+                />
+              )}
+            />
+          </Form.Item>
 
           <div className="modal-actions">
-            <button
-              type="button"
+            <Button
+              type="default"
               onClick={onClose}
-              className="btn-secondary"
+              size="large"
+              className="cancel-btn"
             >
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary"
+            </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={loading}
+              size="large"
+              className="submit-btn"
             >
-              {loading ? 'Saving...' : 'Submit'}
-            </button>
+              {loading ? 'Saving...' : user ? 'Update User' : 'Create User'}
+            </Button>
           </div>
-        </form>
+        </Form>
       </div>
     </div>
   );

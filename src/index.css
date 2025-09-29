@@ -36,7 +36,7 @@ code {
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
 }
 
 .login-title {
@@ -58,6 +58,219 @@ code {
   border-radius: 6px;
   font-size: 14px;
   transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-container .form-input {
+  padding-right: 50px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #666;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s, background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.password-toggle-btn:hover {
+  color: #333;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.password-toggle-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+}
+
+/* Ant Design Form Customizations */
+.login-form .form-item {
+  margin-bottom: 20px;
+}
+
+.login-form .form-item .ant-form-item-explain-error {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.login-form .ant-input-affix-wrapper {
+  border-radius: 6px;
+  border: 1px solid #e1e5e9;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-form .ant-input-affix-wrapper:hover {
+  border-color: #4285f4;
+}
+
+.login-form .ant-input-affix-wrapper-focused {
+  border-color: #4285f4;
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+}
+
+.login-form .ant-input-affix-wrapper.ant-input-affix-wrapper-status-error {
+  border-color: #dc3545;
+}
+
+.login-form .ant-input-affix-wrapper.ant-input-affix-wrapper-status-error:hover {
+  border-color: #dc3545;
+}
+
+.login-form .ant-input {
+  border: none;
+  box-shadow: none;
+}
+
+.login-form .ant-input:focus {
+  box-shadow: none;
+}
+
+.login-form .ant-checkbox-wrapper {
+  color: #666;
+  font-size: 14px;
+}
+
+.login-form .login-btn.ant-btn {
+  background: #4285f4;
+  border-color: #4285f4;
+  border-radius: 6px;
+  font-weight: 500;
+  height: 48px;
+  font-size: 16px;
+}
+
+.login-form .login-btn.ant-btn:hover {
+  background: #3367d6;
+  border-color: #3367d6;
+}
+
+.login-form .login-btn.ant-btn:disabled {
+  background: #ccc;
+  border-color: #ccc;
+}
+
+/* User Modal Form Styles */
+.user-modal-form .ant-form-item {
+  margin-bottom: 20px;
+}
+
+.user-modal-form .ant-form-item-label > label {
+  font-weight: 600;
+  color: #333;
+}
+
+.user-modal-form .ant-form-item-label > label.ant-form-item-required::before {
+  color: #dc3545;
+}
+
+.user-modal-form .ant-input-affix-wrapper {
+  border-radius: 6px;
+  border: 1px solid #e1e5e9;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.user-modal-form .ant-input-affix-wrapper:hover {
+  border-color: #4285f4;
+}
+
+.user-modal-form .ant-input-affix-wrapper-focused {
+  border-color: #4285f4;
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+}
+
+.user-modal-form .ant-input-affix-wrapper.ant-input-affix-wrapper-status-error {
+  border-color: #dc3545;
+}
+
+.user-modal-form .ant-input-affix-wrapper.ant-input-affix-wrapper-status-error:hover {
+  border-color: #dc3545;
+}
+
+.user-modal-form .ant-input {
+  border: none;
+  box-shadow: none;
+}
+
+.user-modal-form .ant-input:focus {
+  box-shadow: none;
+}
+
+/* Profile Preview Styles */
+.profile-preview {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #e1e5e9;
+}
+
+.profile-preview-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #4285f4;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Action Buttons */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e1e5e9;
+}
+
+.modal-actions .cancel-btn.ant-btn {
+  background: #f8f9fa;
+  border-color: #dee2e6;
+  color: #6c757d;
+  font-weight: 500;
+  min-width: 120px;
+  height: 40px;
+}
+
+.modal-actions .cancel-btn.ant-btn:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+  color: #495057;
+}
+
+.modal-actions .submit-btn.ant-btn {
+  background: #4285f4;
+  border-color: #4285f4;
+  font-weight: 500;
+  min-width: 120px;
+  height: 40px;
+}
+
+.modal-actions .submit-btn.ant-btn:hover {
+  background: #3367d6;
+  border-color: #3367d6;
+}
+
+.modal-actions .submit-btn.ant-btn:disabled {
+  background: #ccc;
+  border-color: #ccc;
 }
 
 .form-input:focus {

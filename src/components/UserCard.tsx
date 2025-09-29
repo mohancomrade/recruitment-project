@@ -8,12 +8,18 @@ interface UserCardProps {
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete }) => {
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.target as HTMLImageElement;
+    target.src = `https://via.placeholder.com/150?text=${user.first_name.charAt(0)}${user.last_name.charAt(0)}`;
+  };
+
   return (
     <div className="user-card">
       <img
         className="user-avatar-card"
         src={user.avatar}
         alt={`${user.first_name} ${user.last_name}`}
+        onError={handleImageError}
       />
       <h3 className="user-card-name">
         {user.first_name} {user.last_name}
